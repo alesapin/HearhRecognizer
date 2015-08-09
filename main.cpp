@@ -7,6 +7,7 @@
 #include "extractor/imageextractor.h"
 #include "extractor/textextractor.h"
 #include "extractor/realcardextractor.h"
+#include "extractor/screenshotextractor.h"
 #include "cards/card.h"
 #include "cards/recognizedcard.h"
 #include "util.h"
@@ -14,18 +15,20 @@
 
 int main(int argc, char *argv[])
 {
+    cv::Mat basicImage=cv::imread("big1.png",1);
+    ScreenShotExtractor scr;
+    ImageCard img = scr.extractCardFromScreen(basicImage);
 
-    ImageCard img("croc.png");
     img.saveDescription("","descr.png");
     img.saveHealth("","health.png");
+    img.saveAttack("","attack.png");
+    img.saveMana("","mana.png");
     ImageExtractor extr;
     TextExtractor textExtr;
     RealCardExtractor realExtr;
-    Card card = extr.getExtractedCard(img);
+    Card card = extr.getExtractedCard(scr.extractCardFromScreen(basicImage));
     RecognizedCard crd = textExtr.getExtractedCard(card);
-    qDebug() << crd.getMana();
-    qDebug() << crd.getAttack();
-    qDebug() << crd.getHealth();
+
     DBConnector db(QString("localhost"));
     db.connect();
     std::vector<DetectedCard> result = db.getCardsByStats(crd.getMana(),crd.getHealth(),crd.getAttack());

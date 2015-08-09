@@ -18,6 +18,9 @@ class ImageCard
     cv::Mat markedImage;
     std::size_t rows;
     std::size_t cols;
+    cv::Point2f manaPos;
+    cv::Point2f hpPos;
+    cv::Point2f attackPos;
     cv::Mat cutRect(std::size_t x,std::size_t y,std::size_t width,std::size_t height);
     void drawRedRect(std::size_t x,std::size_t y,std::size_t width,std::size_t height);
     void splitCard();
@@ -26,6 +29,8 @@ class ImageCard
 public:
     ImageCard(std::string path);
     ImageCard(cv::Mat image);
+    ImageCard(cv::Mat image,cv::Point2f manapos,cv::Point2f hppos,cv::Point2f attackpos);
+
     cv::Mat getMana() const;
     void setMana(const cv::Mat &value);
     cv::Mat getAttack() const;
@@ -59,6 +64,16 @@ public:
     static const std::size_t CLASS_WIDTH;
     static const std::size_t DESCR_HEIGHT;
     static const std::size_t DESCR_WIDTH;
+    static const double RADIUS_PROP;
+    static const double DESC_UP_X_PROP;
+    static const double DESC_UP_Y_PROP;
+    static const double DESC_WIDTH_PROP;
+    static const double DESC_HEIGHT_PROP;
+    static const double CLASS_UP_X_PROP;
+    static const double CLASS_UP_Y_PROP;
+    static const double CLASS_WIDTH_PROP;
+    static const double CLASS_HEIGHT_PROP;
+
 };
 
 #endif // IMAGECARD_H

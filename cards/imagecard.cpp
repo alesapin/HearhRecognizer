@@ -6,8 +6,15 @@ const std::size_t ImageCard::CLASS_HEIGHT = 50;
 const std::size_t ImageCard::CLASS_WIDTH = 100;
 const std::size_t ImageCard::DESCR_HEIGHT = 80;
 const std::size_t ImageCard::DESCR_WIDTH = 200;
-
-
+const double ImageCard::RADIUS_PROP = 0.09;
+const double ImageCard::DESC_UP_X_PROP = 0.135802;
+const double ImageCard::DESC_UP_Y_PROP = 0.642202;
+const double ImageCard::DESC_WIDTH_PROP = 0.74074;
+const double ImageCard::DESC_HEIGHT_PROP = 0.229358;
+const  double ImageCard::CLASS_UP_X_PROP = 0.246914;
+const  double ImageCard::CLASS_UP_Y_PROP = 0.88074;
+const  double ImageCard::CLASS_WIDTH_PROP = 0.54321;
+const  double ImageCard::CLASS_HEIGHT_PROP = 0.0917431;
 
 cv::Mat ImageCard::getMana() const
 {
@@ -108,20 +115,76 @@ void ImageCard::processCard()
 
 void ImageCard::splitCard()
 {
-    mana = cutRect(0,0,ImageCard::STAT_WIDTH,ImageCard::STAT_HEIGHT);
-    attack = cutRect(0,rows-150,ImageCard::STAT_WIDTH,ImageCard::STAT_HEIGHT);
-    health = cutRect(cols-100,rows-150,ImageCard::STAT_WIDTH,ImageCard::STAT_HEIGHT);
-    crdclass = cutRect(100,rows-80,ImageCard::CLASS_WIDTH,ImageCard::CLASS_HEIGHT);
-    description = cutRect(50,rows-160,ImageCard::DESCR_WIDTH,ImageCard::DESCR_HEIGHT);
+    int radius = (int)(rows * RADIUS_PROP+0.5);
+    if(manaPos != cv::Point2f(-1,-1)){
+        int leftCornerX = (int)manaPos.x - radius;
+        int leftCornerY = (int)manaPos.y - radius;
+        if(leftCornerX < 0) leftCornerX = 0;
+        if(leftCornerY < 0) leftCornerY = 0;
+        mana = cutRect(leftCornerX,leftCornerY,2*radius,2*radius);
+    }else{
+        mana = cutRect(0,0,ImageCard::STAT_WIDTH,ImageCard::STAT_HEIGHT);
+    }
+    if(attackPos != cv::Point2f(-1,-1)){
+        int leftCornerX = (int)attackPos.x - radius;
+        int leftCornerY = (int)attackPos.y - radius;
+        if(leftCornerX < 0) leftCornerX = 0;
+        if(leftCornerY < 0) leftCornerY = 0;
+        int height = 2*radius;
+        if(leftCornerY + 2*radius >= rows){
+            height = rows - leftCornerY - 1;
+        }
+        int width = 2*radius;
+        if(leftCornerX + 2*radius >= cols){
+            width = cols  - leftCornerX -1;
+        }
+        attack = cutRect(leftCornerX,leftCornerY,width,height);
+    }else{
+        attack = cutRect(0,rows-150,ImageCard::STAT_WIDTH,ImageCard::STAT_HEIGHT);
+    }
+    if(hpPos != cv::Point2f(-1,-1)){
+        int leftCornerX = (int)hpPos.x - radius;
+        int leftCornerY = (int)hpPos.y - radius;
+        if(leftCornerX < 0) leftCornerX = 0;
+        if(leftCornerY < 0) leftCornerY = 0;
+        int height = 2*radius;
+        if(leftCornerY + 2*radius >= rows){
+            height = rows - leftCornerY - 1;
+        }
+        int width = 2*radius;
+        if(leftCornerX + 2*radius >= cols){
+            width = cols  - leftCornerX -1;
+        }
+        health = cutRect(leftCornerX,leftCornerY,width,height);
+    }else{
+        health = cutRect(cols-100,rows-150,ImageCard::STAT_WIDTH,ImageCard::STAT_HEIGHT);
+    }
+    if(manaPos != cv::Point2f(-1,-1)){
+        int up_X = (int)(cols * DESC_UP_X_PROP + 0.5);
+        int up_Y = (int)(rows * DESC_UP_Y_PROP + 0.5);
+        int w = (int)(cols * DESC_WIDTH_PROP+0.5);
+        int h = (int)(rows * DESC_HEIGHT_PROP +0.5);
+        description = cutRect(up_X,up_Y,w,h);
+
+        up_X = (int)(cols * CLASS_UP_X_PROP + 0.5);
+        up_Y = (int)(rows * CLASS_UP_Y_PROP + 0.5);
+        w = (int)(cols * CLASS_WIDTH_PROP + 0.5);
+        h = (int)(rows * CLASS_HEIGHT_PROP + 0.5);
+        crdclass = cutRect(up_X,up_Y,w,h);
+
+    }else{
+        crdclass = cutRect(100,rows-80,ImageCard::CLASS_WIDTH,ImageCard::CLASS_HEIGHT);
+        description = cutRect(50,rows-160,ImageCard::DESCR_WIDTH,ImageCard::DESCR_HEIGHT);
+    }
 }
 
 void ImageCard::markCard()
 {
-    drawRedRect(0,0,ImageCard::STAT_WIDTH,ImageCard::STAT_HEIGHT);
-    drawRedRect(0,rows-150,ImageCard::STAT_WIDTH,ImageCard::STAT_HEIGHT);
-    drawRedRect(cols-100,rows-150,ImageCard::STAT_WIDTH,ImageCard::STAT_HEIGHT);
-    drawRedRect(100,rows-80,ImageCard::CLASS_WIDTH,ImageCard::CLASS_HEIGHT);
-    drawRedRect(50,rows-160,ImageCard::DESCR_WIDTH,ImageCard::DESCR_HEIGHT);
+//    drawRedRect(0,0,ImageCard::STAT_WIDTH,ImageCard::STAT_HEIGHT);
+//    drawRedRect(0,rows-150,ImageCard::STAT_WIDTH,ImageCard::STAT_HEIGHT);
+//    drawRedRect(cols-100,rows-150,ImageCard::STAT_WIDTH,ImageCard::STAT_HEIGHT);
+//    drawRedRect(100,rows-80,ImageCard::CLASS_WIDTH,ImageCard::CLASS_HEIGHT);
+//    drawRedRect(50,rows-160,ImageCard::DESCR_WIDTH,ImageCard::DESCR_HEIGHT);
 }
 
 void ImageCard::turnToBw()
@@ -204,7 +267,7 @@ void ImageCard::drawRedRect(std::size_t x, std::size_t y, std::size_t width, std
         cv::rectangle(markedImage,cv::Rect(x,y,width,height),cv::Scalar(0,0,255),2,8);
 }
 
-ImageCard::ImageCard(std::string path)
+ImageCard::ImageCard(std::string path):manaPos(-1,-1),hpPos(-1,-1),attackPos(-1,-1)
 {
     basicImage = cv::imread(path, 1 );
     markedImage = basicImage.clone();
@@ -213,10 +276,21 @@ ImageCard::ImageCard(std::string path)
     processCard();
 }
 
-ImageCard::ImageCard(cv::Mat image)
+ImageCard::ImageCard(cv::Mat image):manaPos(-1,-1),hpPos(-1,-1),attackPos(-1,-1)
 {
     basicImage = image;
     markedImage = basicImage.clone();
+    cols = basicImage.cols;
+    rows = basicImage.rows;
+    processCard();
+}
+
+ImageCard::ImageCard(cv::Mat image, cv::Point2f manapos, cv::Point2f hppos, cv::Point2f attackpos)
+{
+    basicImage = image;
+    manaPos = manapos;
+    hpPos = hppos;
+    attackPos = attackpos;
     cols = basicImage.cols;
     rows = basicImage.rows;
     processCard();
