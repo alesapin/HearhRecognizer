@@ -24,6 +24,8 @@ HEADERS  += Main.h \
 include(extractor/extractor.pri)
 include(cards/cards.pri)
 include(dbconnector/dbconnector.pri)
+include(screencontroller/screencontroller.pri)
+
 INCLUDEPATH += /usr/local/include/opencv
 LIBS += -L/usr/local/lib -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_text
 LIBS +=`pkg-config opencv --cflags --libs`

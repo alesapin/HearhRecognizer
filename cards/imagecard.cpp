@@ -125,7 +125,7 @@ void ImageCard::splitCard()
     }else{
         mana = cutRect(0,0,ImageCard::STAT_WIDTH,ImageCard::STAT_HEIGHT);
     }
-    if(attackPos != cv::Point2f(-1,-1)){
+    if(attackPos.x > 0){
         int leftCornerX = (int)attackPos.x - radius;
         int leftCornerY = (int)attackPos.y - radius;
         if(leftCornerX < 0) leftCornerX = 0;
@@ -142,7 +142,7 @@ void ImageCard::splitCard()
     }else{
         attack = cutRect(0,rows-150,ImageCard::STAT_WIDTH,ImageCard::STAT_HEIGHT);
     }
-    if(hpPos != cv::Point2f(-1,-1)){
+    if(hpPos.x > 0){
         int leftCornerX = (int)hpPos.x - radius;
         int leftCornerY = (int)hpPos.y - radius;
         if(leftCornerX < 0) leftCornerX = 0;
@@ -194,9 +194,9 @@ void ImageCard::turnToBw()
     cvtColor(health,health,CV_BGR2GRAY);
     cvtColor(crdclass,crdclass,CV_BGR2GRAY);
     cvtColor(description,description,CV_BGR2GRAY);
-    mana = mana > 250;
-    attack = attack > 250;
-    health = health > 250;
+    mana = mana > 253;
+    attack = attack > 253;
+    health = health > 253;
     crdclass = crdclass > 230;
     description = (cv::Scalar::all(255) - description) > 200;
 }
@@ -273,7 +273,9 @@ ImageCard::ImageCard(std::string path):manaPos(-1,-1),hpPos(-1,-1),attackPos(-1,
     markedImage = basicImage.clone();
     cols = basicImage.cols;
     rows = basicImage.rows;
+    empty = false;
     processCard();
+
 }
 
 ImageCard::ImageCard(cv::Mat image):manaPos(-1,-1),hpPos(-1,-1),attackPos(-1,-1)
@@ -282,6 +284,7 @@ ImageCard::ImageCard(cv::Mat image):manaPos(-1,-1),hpPos(-1,-1),attackPos(-1,-1)
     markedImage = basicImage.clone();
     cols = basicImage.cols;
     rows = basicImage.rows;
+    empty = false;
     processCard();
 }
 
@@ -293,5 +296,11 @@ ImageCard::ImageCard(cv::Mat image, cv::Point2f manapos, cv::Point2f hppos, cv::
     attackPos = attackpos;
     cols = basicImage.cols;
     rows = basicImage.rows;
+    empty = false;
     processCard();
+}
+
+ImageCard::ImageCard()
+{
+    empty = true;
 }

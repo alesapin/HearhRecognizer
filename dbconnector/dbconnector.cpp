@@ -23,8 +23,13 @@ std::vector<DetectedCard> DBConnector::getCardsByStats(int mana, int health, int
     } else {
         b.append("health",health);
     }
+
     b.append("cost",mana);
-    b.append("attack",attack);
+    if(attack == 0){
+
+    }else{
+        b.append("attack",attack);
+    }
     std::auto_ptr<mongo::DBClientCursor> cursor = connection->query("carddb.cards", b.obj());
     std::vector<DetectedCard> result;
     while(cursor->more()){

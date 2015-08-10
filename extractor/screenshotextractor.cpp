@@ -63,6 +63,9 @@ ImageCard ScreenShotExtractor::extractCardFromScreen(const cv::Mat &basicScreen)
     cv::Point2f manaplace;
     cv::Point2f hpplace;
     cv::Point2f attackplace;
+    if(circles.empty()){
+        return ImageCard();
+    }
     manaplace = circles[0].center;
     if(circles.size() > 1){
         attackplace = circles[1].center;

@@ -22,6 +22,7 @@ DetectedCard RealCardExtractor::getRealCard(const std::vector<DetectedCard> &obj
     }
     QString descr = card.getDescription();
     QString cls = card.getCls();
+    std::vector<QString> mechs = card.getMechanics();
     for(auto itr = copy.begin(); itr != copy.end();) {
         if(cls != itr->getType()){
             itr = copy.erase(itr);
@@ -30,13 +31,15 @@ DetectedCard RealCardExtractor::getRealCard(const std::vector<DetectedCard> &obj
         }
     }
     if(copy.empty()) copy = std::vector<DetectedCard>(obj);
-    int maxLength = 0;
+    int minDiff = 10000;
     int maxSimilarIndex = 0;
+   // qDebug() << descr;
     for(int i =0;i<copy.size();++i){
         QString realDescr = removeBold(copy[i].getDescription());
         QString sub = Util::maxSubstring(descr,realDescr);
-        if(sub.length() > maxLength){
-            maxLength = sub.length();
+        qDebug() << "REAL: "<< realDescr << " sub: " << sub;
+        if(std::abs(sub.length() - realDescr.length()) < minDiff  && sub.length() > 2){
+            minDiff = std::abs(sub.length() - realDescr.length()) ;
             maxSimilarIndex = i;
         }
     }

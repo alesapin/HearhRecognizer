@@ -21,6 +21,7 @@ class ImageCard
     cv::Point2f manaPos;
     cv::Point2f hpPos;
     cv::Point2f attackPos;
+    bool empty;
     cv::Mat cutRect(std::size_t x,std::size_t y,std::size_t width,std::size_t height);
     void drawRedRect(std::size_t x,std::size_t y,std::size_t width,std::size_t height);
     void splitCard();
@@ -30,7 +31,8 @@ public:
     ImageCard(std::string path);
     ImageCard(cv::Mat image);
     ImageCard(cv::Mat image,cv::Point2f manapos,cv::Point2f hppos,cv::Point2f attackpos);
-
+    ImageCard();
+    inline bool isEmpty(){return empty;}
     cv::Mat getMana() const;
     void setMana(const cv::Mat &value);
     cv::Mat getAttack() const;

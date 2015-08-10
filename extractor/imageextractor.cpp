@@ -13,8 +13,10 @@ QString ImageExtractor::deleteAllLetters(const QString &str)
 
 ImageExtractor::ImageExtractor()
 {
+    setlocale (LC_NUMERIC, "C");
     api = new tesseract::TessBaseAPI();
     api->Init(NULL, "eng");
+
 }
 
 Card ImageExtractor::getExtractedCard(const ImageCard &img)
